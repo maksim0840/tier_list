@@ -1,5 +1,6 @@
 package core.entities;
 
+import core.dto.TagCreateDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,4 +32,8 @@ public class Tag {
     }
 
     public Tag() {}
+
+    public Tag(TagCreateDTO tagCreateDTO) {
+        this(tagCreateDTO.name(), tagCreateDTO.color());
+    }
 }

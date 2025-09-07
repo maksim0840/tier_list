@@ -1,5 +1,6 @@
 package core.entities;
 
+import core.dto.TLObjectCreateDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +20,7 @@ public class TLObject {
     private String name;
     private Long pictureId;
     private String description;
-    private int priorityIndex;
+    private Integer priorityIndex;
 
     @ManyToOne
     @JoinColumn(name = "rowId")
@@ -36,7 +37,7 @@ public class TLObject {
     private List<Tag> tagsByObject;
 
 
-    public TLObject(String name, Long pictureId, String description, int priorityIndex) {
+    public TLObject(String name, Long pictureId, String description, Integer priorityIndex) {
         this.name = name;
         this.pictureId = pictureId;
         this.description = description;
@@ -44,4 +45,13 @@ public class TLObject {
     }
 
     public TLObject() {}
+
+    public TLObject(TLObjectCreateDTO objectCreateDTO) {
+        this(objectCreateDTO.name(), objectCreateDTO.pictureId(), objectCreateDTO.description(), null);
+    }
+
+    // Убрать тег из объекта
+    public void clearObjectFromTag(Tag tag) {
+        tagsByObject.remove(tag); // удаляем тэг из коллекции
+    }
 }

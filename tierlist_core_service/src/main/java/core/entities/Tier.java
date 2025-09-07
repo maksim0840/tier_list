@@ -36,4 +36,9 @@ public class Tier {
     }
 
     public Tier() {}
+
+    public Integer getMaxRowsPriorityIndex() {
+        if (rowsByTier.isEmpty()) return null;
+        return rowsByTier.stream().mapToInt(TLRow::getPriorityIndex).sum();
+    }
 }

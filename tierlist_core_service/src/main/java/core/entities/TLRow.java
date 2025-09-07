@@ -1,5 +1,6 @@
 package core.entities;
 
+import core.dto.TLRowCreateDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +19,7 @@ public class TLRow {
 
     private String name;
     private String color;
-    private int priorityIndex;
+    private Integer priorityIndex;
 
     @OneToMany(mappedBy = "rowByObject")
     private List<TLObject> objectsByRow;
@@ -27,7 +28,7 @@ public class TLRow {
     @JoinColumn(name = "tierId")
     private Tier tierByRow;
 
-    public TLRow(String name, String color, int priorityIndex) {
+    public TLRow(String name, String color, Integer priorityIndex) {
         this.name = name;
         this.color = color;
         this.priorityIndex = priorityIndex;
@@ -35,11 +36,25 @@ public class TLRow {
 
     public TLRow() {}
 
-    /*
-    Передвинуть элемент и скоректировать индексы всех остальных
-     */
-    public void insertWithIndexUpdate(int pos, TLObject tlObject) {
-        if (pos == tlObject.getPriorityIndex()) return;
+    public void deleteObjectById(Long id) {
+        objectsByRow.removeIf(obj -> obj.getId().equals(id));
     }
 
+    // Передвинуть элемент и скорректировать индексы всех остальных
+    public void insertWithIndexUpdate(int newPos, TLObject movingObject) {
+        movingObject.getRowByObject().deleteObjectById(movingObject.getId()); // удаляем объект из прошлой коллекции
+        objectsByRow.add(newPos, movingObject); // вставляем объект в новую коллекцию
+        for (int i = 0; i < objectsByRow.size(); ++i) {
+            objectsByRow.get(i).setPriorityIndex(i); // корректируем индексы
+        }
+    }
+
+    // Убрать объект из ряда
+    public void clearRowFromObject(TLObject clearingObject) {
+        objectsByRow.remove(clearingObject); // удаляем объект из коллекции
+        clearingObject.setPriorityIndex(null); // очищаем его индексы (теперь он никому не принадлежит)
+        for (int i = 0; i < objectsByRow.size(); ++i) {
+            objectsByRow.get(i).setPriorityIndex(i); // корректируем индексы в коллекции
+        }
+    }
 }
